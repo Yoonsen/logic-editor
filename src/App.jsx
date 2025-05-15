@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 export default function App() {
   const [text, setText] = useState("");
   const [showCheat, setShowCheat] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const textareaRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
 
@@ -93,10 +94,28 @@ export default function App() {
 
   return (
     <div className="container-fluid py-1">
-      <div className="d-flex align-items-center mb-2">
-        <h6 className="mb-0 text-muted">Logic Formula Editor</h6>
-        <small className="text-muted ms-2">(hover symbols for descriptions)</small>
+      <div className="mb-2">
+        <div 
+          className="d-flex align-items-center cursor-pointer user-select-none"
+          onClick={() => setShowHelp(!showHelp)}
+          style={{ cursor: 'pointer' }}
+        >
+          <h6 className="mb-0 text-muted">Logic Formula Editor</h6>
+          <small className="text-muted ms-2">(hover symbols for descriptions)</small>
+          <small className="text-muted ms-2">
+            {showHelp ? '▼' : '▶'}
+          </small>
+        </div>
+        {showHelp && (
+          <div className="mt-2 small text-muted border-start ps-3">
+            This editor helps you write and test logic formulas and LaTeX math expressions. 
+            Perfect for trying out formulas before using them in larger documents or editors. 
+            Click symbols to insert them, or type directly using LaTeX syntax (e.g., $\forall x$).
+            Use the copy button to transfer your formula elsewhere.
+          </div>
+        )}
       </div>
+
       <div className="d-flex flex-column flex-lg-row gap-2">
         {/* Editor Section */}
         <div className="flex-grow-1" style={{ maxWidth: '400px' }}>
