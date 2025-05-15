@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,6 +8,32 @@ export default function App() {
     "Truth is what we condition on: p(x | C) = p(x | y, C) implies y is irrelevant."
   );
   const [showCheat, setShowCheat] = useState(false);
+  const textareaRef = useRef(null);
+  const [cursorPosition, setCursorPosition] = useState(0);
+
+  const handleTextChange = (e) => {
+    setText(e.target.value);
+    setCursorPosition(e.target.selectionStart);
+  };
+
+  const handleCursorChange = (e) => {
+    setCursorPosition(e.target.selectionStart);
+  };
+
+  const insertSymbol = (symbol) => {
+    const before = text.slice(0, cursorPosition);
+    const after = text.slice(cursorPosition);
+    const newText = before + symbol + after;
+    setText(newText);
+    
+    // Set focus back to textarea and update cursor position
+    const newPosition = cursorPosition + symbol.length;
+    setTimeout(() => {
+      textareaRef.current.focus();
+      textareaRef.current.setSelectionRange(newPosition, newPosition);
+      setCursorPosition(newPosition);
+    }, 0);
+  };
 
   const renderMath = (input) => {
     const parts = input.split(/(\${1,2}[^$]+?\${1,2})/g);
@@ -20,69 +46,89 @@ export default function App() {
     });
   };
 
+  const SymbolRow = ({ symbol1, desc1, symbol2, desc2 }) => (
+    <tr>
+      <td className="text-center">
+        <button 
+          className="btn btn-outline-secondary btn-sm px-3"
+          onClick={() => insertSymbol(symbol1)}
+          title={desc1}
+        >
+          {symbol1}
+        </button>
+      </td>
+      <td className="text-center">
+        <button 
+          className="btn btn-outline-secondary btn-sm px-3"
+          onClick={() => insertSymbol(symbol2)}
+          title={desc2}
+        >
+          {symbol2}
+        </button>
+      </td>
+    </tr>
+  );
+
+  const copyText = () => {
+    navigator.clipboard.writeText(text).then(() => {
+      // Could add a toast/notification here if desired
+    });
+  };
+
   return (
-    <div className="container py-5">
-      <div className="mx-auto p-4 bg-white rounded shadow" style={{ maxWidth: '800px' }}>
-        <h1 className="text-center mb-4">🧠 Logic Editor</h1>
-
-        <div className="mb-4">
-          <textarea
-            className="form-control"
-            rows={6}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Write text with $inline$ or $$block$$ math."
-          />
-        </div>
-
-        <div className="border p-3 rounded bg-light mb-4">
-          {renderMath(text)}
-        </div>
-
-        <div className="text-center mb-4">
-          <button
-            className="btn btn-primary"
-            onClick={() => setShowCheat(!showCheat)}
-          >
-            {showCheat ? "Hide" : "Show"} Symbol Cheat Sheet
-          </button>
-        </div>
-
-        {showCheat && (
-          <div className="bg-white border p-4 rounded">
-            <h5>Logic & Set Theory</h5>
-            <ul className="row row-cols-2">
-              <li>∈ — element of</li>
-              <li>∉ — not an element of</li>
-              <li>∧ — logical AND</li>
-              <li>∨ — logical OR</li>
-              <li>¬ — logical NOT</li>
-              <li>→ — implies</li>
-              <li>⇒ — strong implication</li>
-              <li>↔ — if and only if</li>
-              <li>∀ — for all</li>
-              <li>∃ — there exists</li>
-              <li>⊆ — subset</li>
-              <li>⊇ — superset</li>
-            </ul>
-
-            <h5 className="mt-3">Comparison</h5>
-            <ul className="row row-cols-2">
-              <li>≠ — not equal</li>
-              <li>≤ — less than or equal</li>
-              <li>≥ — greater than or equal</li>
-              <li>≡ — identical</li>
-              <li>≈ — approximately equal</li>
-            </ul>
-
-            <h5 className="mt-3">Typography</h5>
-            <ul>
-              <li>- — hyphen</li>
-              <li>– — en dash (Option + -)</li>
-              <li>— — em dash (Shift + Option + -)</li>
-            </ul>
+    <div className="container-fluid py-1">
+      <div className="d-flex align-items-center mb-2">
+        <h6 className="mb-0 text-muted">Logic Formula Editor</h6>
+        <small className="text-muted ms-2">(hover symbols for descriptions)</small>
+      </div>
+      <div className="d-flex flex-column flex-lg-row gap-2">
+        {/* Editor Section */}
+        <div className="flex-grow-1" style={{ maxWidth: '400px' }}>
+          <div className="mb-2">
+            <textarea
+              ref={textareaRef}
+              className="form-control form-control-sm"
+              rows={3}
+              value={text}
+              onChange={handleTextChange}
+              onKeyUp={handleCursorChange}
+              onClick={handleCursorChange}
+              placeholder="Type or paste formula here..."
+            />
           </div>
-        )}
+          <div className="d-flex gap-2 align-items-start">
+            <div className="flex-grow-1 border p-2 rounded bg-light" style={{ minHeight: '3em' }}>
+              {renderMath(text)}
+            </div>
+            <button 
+              className="btn btn-outline-secondary btn-sm" 
+              onClick={copyText}
+              title="Copy formula text"
+            >
+              📋
+            </button>
+          </div>
+        </div>
+
+        {/* Symbols in 2 columns */}
+        <div style={{ width: '150px' }}>
+          <table className="table table-sm mb-0 small">
+            <tbody style={{ lineHeight: 1 }}>
+              <SymbolRow symbol1="∧" desc1="AND" symbol2="⊗" desc2="tensor product" />
+              <SymbolRow symbol1="∨" desc1="OR" symbol2="⊸" desc2="linear implication" />
+              <SymbolRow symbol1="¬" desc1="NOT" symbol2="⊥" desc2="perpendicular/tack" />
+              <SymbolRow symbol1="→" desc1="implies" symbol2="⅋" desc2="par" />
+              <SymbolRow symbol1="↔" desc1="if and only if" symbol2="⊕" desc2="plus/direct sum" />
+              <SymbolRow symbol1="∀" desc1="for all" symbol2="!" desc2="of course/bang" />
+              <SymbolRow symbol1="∃" desc1="there exists" symbol2="?" desc2="why not/question" />
+              <SymbolRow symbol1="=" desc1="equals" symbol2="∈" desc2="element of" />
+              <SymbolRow symbol1="≠" desc1="not equal" symbol2="∉" desc2="not element of" />
+              <SymbolRow symbol1="≤" desc1="less than or equal" symbol2="⊆" desc2="subset" />
+              <SymbolRow symbol1="≥" desc1="greater than or equal" symbol2="⊇" desc2="superset" />
+              <SymbolRow symbol1="$" desc1="math delimiter" symbol2=" " desc2="" />
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
