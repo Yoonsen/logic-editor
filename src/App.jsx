@@ -175,6 +175,7 @@ export default function App() {
               <SymbolRow symbol1="≠" desc1="not equal" symbol2="∉" desc2="not element of" symbol3="σ" desc3="sigma" />
               <SymbolRow symbol1="≤" desc1="less than or equal" symbol2="⊆" desc2="subset" symbol3="φ" desc3="phi" />
               <SymbolRow symbol1="≥" desc1="greater than or equal" symbol2="⊇" desc2="superset" symbol3="ψ" desc3="psi" />
+              <SymbolRow symbol1="⊗" desc1="tensor product" symbol2="⊸" desc2="linear implication" symbol3="⅋" desc3="par" />
               <SymbolRow symbol1="$" desc1="math delimiter" symbol2=" " desc2="" symbol3="ω" desc3="omega" />
             </tbody>
           </table>
