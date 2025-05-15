@@ -111,7 +111,8 @@ export default function App() {
             This editor helps you write and test logic formulas and LaTeX math expressions. 
             Perfect for trying out formulas before using them in larger documents or editors. 
             Click symbols to insert them, or type directly using LaTeX syntax (e.g., $\forall x$).
-            All formulas built with these symbols can be safely pasted into emails, Word, Google Docs, and other text editors.
+            All formulas built with these symbols (without $ delimiters) can be safely pasted into emails, Word, Google Docs, and other text editors.
+            LaTeX-rendered formulas (with $ delimiters) are for preview only.
             Use the copy button to transfer your formula elsewhere.
           </div>
         )}
