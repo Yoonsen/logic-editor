@@ -164,11 +164,11 @@ export default function App() {
               lineHeight: 1,
               verticalAlign: 'middle'
             }}>
-              <SymbolRow symbol1="∧" desc1="AND" symbol2="⊗" desc2="tensor product" symbol3="α" desc3="alpha" />
-              <SymbolRow symbol1="∨" desc1="OR" symbol2="⊸" desc2="linear implication" symbol3="β" desc3="beta" />
+              <SymbolRow symbol1="∧" desc1="AND" symbol2="∩" desc2="intersection" symbol3="α" desc3="alpha" />
+              <SymbolRow symbol1="∨" desc1="OR" symbol2="∪" desc2="union" symbol3="β" desc3="beta" />
               <SymbolRow symbol1="¬" desc1="NOT" symbol2="⊥" desc2="perpendicular/tack" symbol3="γ" desc3="gamma" />
-              <SymbolRow symbol1="→" desc1="implies" symbol2="⅋" desc2="par" symbol3="δ" desc3="delta" />
-              <SymbolRow symbol1="↔" desc1="if and only if" symbol2="⊕" desc2="plus/direct sum" symbol3="ε" desc3="epsilon" />
+              <SymbolRow symbol1="→" desc1="implies" symbol2="⊂" desc2="proper subset" symbol3="δ" desc3="delta" />
+              <SymbolRow symbol1="↔" desc1="if and only if" symbol2="⊃" desc2="proper superset" symbol3="ε" desc3="epsilon" />
               <SymbolRow symbol1="∀" desc1="for all" symbol2="!" desc2="of course/bang" symbol3="λ" desc3="lambda" />
               <SymbolRow symbol1="∃" desc1="there exists" symbol2="?" desc2="why not/question" symbol3="μ" desc3="mu" />
               <SymbolRow symbol1="=" desc1="equals" symbol2="∈" desc2="element of" symbol3="π" desc3="pi" />
