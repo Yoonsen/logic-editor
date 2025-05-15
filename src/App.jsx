@@ -164,8 +164,8 @@ export default function App() {
               lineHeight: 1,
               verticalAlign: 'middle'
             }}>
-              <SymbolRow symbol1="∧" desc1="AND" symbol2="∩" desc2="intersection" symbol3="α" desc3="alpha" />
-              <SymbolRow symbol1="∨" desc1="OR" symbol2="∪" desc2="union" symbol3="β" desc3="beta" />
+              <SymbolRow symbol1="∧" desc1="AND" symbol2="⋂" desc2="intersection" symbol3="α" desc3="alpha" />
+              <SymbolRow symbol1="∨" desc1="OR" symbol2="⋃" desc2="union" symbol3="β" desc3="beta" />
               <SymbolRow symbol1="¬" desc1="NOT" symbol2="⊥" desc2="perpendicular/tack" symbol3="γ" desc3="gamma" />
               <SymbolRow symbol1="→" desc1="implies" symbol2="⊂" desc2="proper subset" symbol3="δ" desc3="delta" />
               <SymbolRow symbol1="↔" desc1="if and only if" symbol2="⊃" desc2="proper superset" symbol3="ε" desc3="epsilon" />
