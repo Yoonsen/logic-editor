@@ -4,9 +4,7 @@ import "katex/dist/katex.min.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function App() {
-  const [text, setText] = useState(
-    "Truth is what we condition on: p(x | C) = p(x | y, C) implies y is irrelevant."
-  );
+  const [text, setText] = useState("");
   const [showCheat, setShowCheat] = useState(false);
   const textareaRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
@@ -48,18 +46,18 @@ export default function App() {
 
   const SymbolRow = ({ symbol1, desc1, symbol2, desc2 }) => (
     <tr>
-      <td className="text-center">
+      <td className="text-center p-1">
         <button 
-          className="btn btn-outline-secondary btn-sm px-3"
+          className="btn btn-outline-secondary btn-sm px-2 py-1"
           onClick={() => insertSymbol(symbol1)}
           title={desc1}
         >
           {symbol1}
         </button>
       </td>
-      <td className="text-center">
+      <td className="text-center p-1">
         <button 
-          className="btn btn-outline-secondary btn-sm px-3"
+          className="btn btn-outline-secondary btn-sm px-2 py-1"
           onClick={() => insertSymbol(symbol2)}
           title={desc2}
         >
@@ -73,6 +71,15 @@ export default function App() {
     navigator.clipboard.writeText(text).then(() => {
       // Could add a toast/notification here if desired
     });
+  };
+
+  const copyRendered = () => {
+    // Remove LaTeX delimiters and commands to get plain text
+    const plainText = text.replace(/\$\$|\$/g, '')  // Remove $$ and $
+                         .replace(/\\[a-zA-Z]+/g, '') // Remove LaTeX commands
+                         .replace(/[{}]/g, '')        // Remove curly braces
+                         .trim();
+    navigator.clipboard.writeText(plainText);
   };
 
   return (
@@ -94,14 +101,26 @@ export default function App() {
               onKeyUp={handleCursorChange}
               onClick={handleCursorChange}
               placeholder="Type or paste formula here..."
+              style={{ fontSize: '16px' }}  /* Prevents zoom on mobile */
             />
           </div>
           <div className="d-flex gap-2 align-items-start">
-            <div className="flex-grow-1 border p-2 rounded bg-light" style={{ minHeight: '3em' }}>
-              {renderMath(text)}
+            <div 
+              className="flex-grow-1 border p-2 rounded bg-light" 
+              style={{ 
+                minHeight: '3em',
+                lineHeight: '1.5',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <div style={{ width: '100%', overflowX: 'auto' }}>
+                {renderMath(text)}
+              </div>
             </div>
             <button 
-              className="btn btn-outline-secondary btn-sm" 
+              className="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center"
+              style={{ width: '34px', height: '34px' }}
               onClick={copyText}
               title="Copy formula text"
             >
@@ -111,9 +130,12 @@ export default function App() {
         </div>
 
         {/* Symbols in 2 columns */}
-        <div style={{ width: '150px' }}>
+        <div style={{ width: '150px' }} className="mt-2 mt-lg-0">
           <table className="table table-sm mb-0 small">
-            <tbody style={{ lineHeight: 1 }}>
+            <tbody style={{ 
+              lineHeight: 1,
+              verticalAlign: 'middle'
+            }}>
               <SymbolRow symbol1="∧" desc1="AND" symbol2="⊗" desc2="tensor product" />
               <SymbolRow symbol1="∨" desc1="OR" symbol2="⊸" desc2="linear implication" />
               <SymbolRow symbol1="¬" desc1="NOT" symbol2="⊥" desc2="perpendicular/tack" />
