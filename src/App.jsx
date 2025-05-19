@@ -45,7 +45,7 @@ export default function App() {
     });
   };
 
-  const SymbolRow = ({ symbol1, desc1, symbol2, desc2, symbol3, desc3 }) => (
+  const SymbolRow = ({ symbol1, desc1, symbol2, desc2, symbol3, desc3, symbol4, desc4, symbol5, desc5 }) => (
     <tr>
       <td className="text-center p-1">
         <button 
@@ -72,6 +72,24 @@ export default function App() {
           title={desc3}
         >
           {symbol3}
+        </button>
+      </td>
+      <td className="text-center p-1">
+        <button 
+          className="btn btn-outline-secondary btn-sm px-2 py-1"
+          onClick={() => insertSymbol(symbol4)}
+          title={desc4}
+        >
+          {symbol4}
+        </button>
+      </td>
+      <td className="text-center p-1">
+        <button 
+          className="btn btn-outline-secondary btn-sm px-2 py-1"
+          onClick={() => insertSymbol(symbol5)}
+          title={desc5}
+        >
+          {symbol5}
         </button>
       </td>
     </tr>
@@ -159,25 +177,28 @@ export default function App() {
           </div>
         </div>
 
-        {/* Symbols in 3 columns */}
-        <div style={{ width: '225px' }} className="mt-2 mt-lg-0">
+        {/* Symbols in 5 columns */}
+        <div style={{ width: '280px' }} className="mt-2 mt-lg-0">
           <table className="table table-sm mb-0 small">
             <tbody style={{ 
               lineHeight: 1,
               verticalAlign: 'middle'
             }}>
-              <SymbolRow symbol1="∧" desc1="AND" symbol2="⊗" desc2="tensor product" symbol3="α" desc3="alpha" />
-              <SymbolRow symbol1="∨" desc1="OR" symbol2="⊸" desc2="linear implication" symbol3="β" desc3="beta" />
-              <SymbolRow symbol1="¬" desc1="NOT" symbol2="⅋" desc2="par" symbol3="γ" desc3="gamma" />
-              <SymbolRow symbol1="→" desc1="implies" symbol2="⊥" desc2="perpendicular/tack" symbol3="δ" desc3="delta" />
-              <SymbolRow symbol1="↔" desc1="if and only if" symbol2="!" desc2="of course/bang" symbol3="ε" desc3="epsilon" />
-              <SymbolRow symbol1="∀" desc1="for all" symbol2="?" desc2="why not/question" symbol3="λ" desc3="lambda" />
-              <SymbolRow symbol1="∃" desc1="there exists" symbol2="⋂" desc2="intersection" symbol3="μ" desc3="mu" />
-              <SymbolRow symbol1="=" desc1="equals" symbol2="⋃" desc2="union" symbol3="π" desc3="pi" />
-              <SymbolRow symbol1="≠" desc1="not equal" symbol2="∉" desc2="not element of" symbol3="σ" desc3="sigma" />
-              <SymbolRow symbol1="≤" desc1="less than or equal" symbol2="⊆" desc2="subset" symbol3="φ" desc3="phi" />
-              <SymbolRow symbol1="≥" desc1="greater than or equal" symbol2="⊇" desc2="superset" symbol3="ψ" desc3="psi" />
-              <SymbolRow symbol1="$" desc1="math delimiter" symbol2=" " desc2="" symbol3="ω" desc3="omega" />
+              <SymbolRow symbol1="∧" desc1="AND" symbol2="⊗" desc2="tensor product" symbol3="α" desc3="alpha" symbol4="∈" desc4="element of" symbol5="⁰" desc5="superscript zero" />
+              <SymbolRow symbol1="∨" desc1="OR" symbol2="⊸" desc2="linear implication" symbol3="β" desc3="beta" symbol4="∉" desc4="not element of" symbol5="¹" desc5="superscript one" />
+              <SymbolRow symbol1="¬" desc1="NOT" symbol2="⅋" desc2="par" symbol3="γ" desc3="gamma" symbol4="⊂" desc4="proper subset" symbol5="²" desc5="superscript two" />
+              <SymbolRow symbol1="→" desc1="implies" symbol2="⊥" desc2="perpendicular/tack" symbol3="δ" desc3="delta" symbol4="⊃" desc4="proper superset" symbol5="³" desc5="superscript three" />
+              <SymbolRow symbol1="↔" desc1="if and only if" symbol2="!" desc2="of course/bang" symbol3="ε" desc3="epsilon" symbol4="∅" desc4="empty set" symbol5="⁴" desc5="superscript four" />
+              <SymbolRow symbol1="∀" desc1="for all" symbol2="?" desc2="why not/question" symbol3="λ" desc3="lambda" symbol4="ℕ" desc4="natural numbers" symbol5="⁵" desc5="superscript five" />
+              <SymbolRow symbol1="∃" desc1="there exists" symbol2="⋂" desc2="intersection" symbol3="μ" desc3="mu" symbol4="ℤ" desc4="integers" symbol5="⁶" desc5="superscript six" />
+              <SymbolRow symbol1="=" desc1="equals" symbol2="⋃" desc2="union" symbol3="π" desc3="pi" symbol4="ℚ" desc4="rational numbers" symbol5="⁷" desc5="superscript seven" />
+              <SymbolRow symbol1="≠" desc1="not equal" symbol2="∉" desc2="not element of" symbol3="σ" desc3="sigma" symbol4="ℝ" desc4="real numbers" symbol5="⁸" desc5="superscript eight" />
+              <SymbolRow symbol1="≤" desc1="less than or equal" symbol2="⊆" desc2="subset" symbol3="φ" desc3="phi" symbol4="ℂ" desc4="complex numbers" symbol5="⁹" desc5="superscript nine" />
+              <SymbolRow symbol1="≥" desc1="greater than or equal" symbol2="⊇" desc2="superset" symbol3="ψ" desc3="psi" symbol4="×" desc4="cartesian product" symbol5="ⁿ" desc5="superscript n" />
+              <SymbolRow symbol1="$" desc1="math delimiter" symbol2=" " desc2="" symbol3="ω" desc3="omega" symbol4="∖" desc4="set difference" symbol5="ᵐ" desc5="superscript m" />
+              <SymbolRow symbol1="ℵ" desc1="aleph" symbol2="ℵ₀" desc2="aleph-null" symbol3="∞" desc3="infinity" symbol4="ℵ₁" desc4="aleph-one" symbol5="ᵏ" desc5="superscript k" />
+              <SymbolRow symbol1="ℵ₂" desc1="aleph-two" symbol2="ℵ₃" desc2="aleph-three" symbol3="₀" desc3="subscript zero" symbol4="₁" desc4="subscript one" symbol5="ᵗ" desc5="superscript t" />
+              <SymbolRow symbol1="₂" desc1="subscript two" symbol2="₃" desc2="subscript three" symbol3="₄" desc3="subscript four" symbol4="₅" desc4="subscript five" symbol5="ᵈ" desc5="superscript d" />
             </tbody>
           </table>
         </div>
