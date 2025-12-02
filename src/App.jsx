@@ -515,7 +515,7 @@ export default function App() {
                         <div className="d-flex justify-content-between align-items-center mt-1">
                           <button
                             type="button"
-                            className="btn btn-link btn-sm p-0 text-danger"
+                            className="btn btn-link btn-sm p-0 text-muted"
                             onClick={() => handleFavoriteClear(slotIndex)}
                             title="Remove from favorites"
                           >

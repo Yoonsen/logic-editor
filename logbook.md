@@ -42,6 +42,7 @@
 - Persisted collapsed/expanded section state in localStorage so the symbol table remembers your preferred view between sessions
 - Labeled each favorite slot with its Alt shortcut right beside the clear button for easy reference
 - Normalized hotkey handling to use hardware key codes so Option+1–9 on macOS now trigger the intended favorites
+- Softened the favorite-slot clear button styling (muted gray instead of attention-grabbing red)
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`
