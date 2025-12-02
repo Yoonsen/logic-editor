@@ -26,4 +26,16 @@
 - Test on mobile devices
 - Monitor performance with extended symbol set
 - Consider implementing performance optimizations
-- Gather user feedback on new symbol availability 
+- Gather user feedback on new symbol availability
+
+## 2025-12-02
+### Structured Symbol Library + Linear Logic Additions
+- Rebuilt the symbol panel as data-driven sections grouped by topic for faster discovery
+- Added a dedicated linear-logic set (⊗, ⊸, ⅋, ⊥, !, ?, □, △) to better support sequent-style workflows
+- Simplified maintenance by chunking symbol configs into reusable rows instead of hard-coded table markup
+- Verified responsive layout still behaves on narrow viewports
+
+### Build & Deployment
+- Installed dependencies and produced a production bundle via `npm run build`
+- Published the latest static bundle with `npm run deploy` so updates are live
+- Noted sandbox port restrictions for `npm run dev`; local runs remain the preferred way to preview
