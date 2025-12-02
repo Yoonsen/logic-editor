@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SYMBOL_COLUMNS = 5;
 const FAVORITES_STORAGE_KEY = "logicEditorFavorites";
+const FAVORITE_SLOTS = 10;
 
 const SYMBOL_SECTIONS = [
   {
@@ -153,14 +154,24 @@ const SYMBOL_LOOKUP = ALL_SYMBOL_ENTRIES.reduce((acc, entry) => {
   return acc;
 }, {});
 
-const loadFavorites = () => {
-  if (typeof window === "undefined") return [];
+const createEmptyFavoriteSlots = () => Array(FAVORITE_SLOTS).fill(null);
+
+const normalizeFavoriteSlots = (slots) => {
+  const normalized = Array.isArray(slots) ? slots.slice(0, FAVORITE_SLOTS) : [];
+  while (normalized.length < FAVORITE_SLOTS) {
+    normalized.push(null);
+  }
+  return normalized;
+};
+
+const loadFavoriteSlots = () => {
+  if (typeof window === "undefined") return createEmptyFavoriteSlots();
   try {
     const stored = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
-    const parsed = stored ? JSON.parse(stored) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    if (!stored) return createEmptyFavoriteSlots();
+    return normalizeFavoriteSlots(JSON.parse(stored));
   } catch {
-    return [];
+    return createEmptyFavoriteSlots();
   }
 };
 
@@ -171,20 +182,20 @@ export default function App() {
   const textareaRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
   const [openSections, setOpenSections] = useState(buildInitialSectionState);
-  const [favoriteSymbols, setFavoriteSymbols] = useState([]);
+  const [favoriteSlots, setFavoriteSlots] = useState(createEmptyFavoriteSlots);
 
   useEffect(() => {
-    setFavoriteSymbols(loadFavorites());
+    setFavoriteSlots(loadFavoriteSlots());
   }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(
         FAVORITES_STORAGE_KEY,
-        JSON.stringify(favoriteSymbols)
+        JSON.stringify(favoriteSlots)
       );
     }
-  }, [favoriteSymbols]);
+  }, [favoriteSlots]);
 
   const handleTextChange = (e) => {
     setText(e.target.value);
@@ -233,77 +244,92 @@ export default function App() {
     return rows;
   };
 
-  const SymbolCell = ({ entry, isFavoritesSection }) => {
+  const handleSymbolDragStart = (event, symbol) => {
+    event.dataTransfer.setData("text/plain", symbol);
+    event.dataTransfer.effectAllowed = "copyMove";
+  };
+
+  const handleFavoriteDragStart = (event, symbol, slotIndex) => {
+    handleSymbolDragStart(event, symbol);
+    event.dataTransfer.setData("application/x-favorite-slot", String(slotIndex));
+  };
+
+  const handleFavoriteDragOver = (event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "copyMove";
+  };
+
+  const handleFavoriteDrop = (event, targetIndex) => {
+    event.preventDefault();
+    const symbol = event.dataTransfer.getData("text/plain");
+    if (!symbol || !SYMBOL_LOOKUP[symbol]) return;
+
+    const sourceIndexData = event.dataTransfer.getData("application/x-favorite-slot");
+    const sourceIndex = sourceIndexData ? Number(sourceIndexData) : -1;
+
+    setFavoriteSlots((prev) => {
+      if (sourceIndex === targetIndex) return prev;
+
+      const updated = [...prev];
+      const targetOriginal = updated[targetIndex];
+
+      if (sourceIndex >= 0 && sourceIndex < FAVORITE_SLOTS) {
+        updated[sourceIndex] = null;
+      }
+
+      const existingIndex = updated.findIndex((entry) => entry === symbol);
+      if (existingIndex !== -1) {
+        updated[existingIndex] = null;
+      }
+
+      updated[targetIndex] = symbol;
+
+      if (
+        sourceIndex >= 0 &&
+        sourceIndex < FAVORITE_SLOTS &&
+        targetOriginal &&
+        targetIndex !== sourceIndex &&
+        targetOriginal !== symbol
+      ) {
+        updated[sourceIndex] = targetOriginal;
+      }
+
+      return updated;
+    });
+  };
+
+  const handleFavoriteClear = (slotIndex) => {
+    setFavoriteSlots((prev) => {
+      const updated = [...prev];
+      updated[slotIndex] = null;
+      return updated;
+    });
+  };
+
+  const SymbolCell = ({ entry }) => {
     if (!entry) {
       return <td className="text-center p-1" />;
     }
 
-    const isFavorite = favoriteSymbols.includes(entry.symbol);
-    const canMoveUp =
-      isFavoritesSection &&
-      typeof entry.favoriteIndex === "number" &&
-      entry.favoriteIndex > 0;
-    const canMoveDown =
-      isFavoritesSection &&
-      typeof entry.favoriteIndex === "number" &&
-      entry.favoriteIndex < favoriteSymbols.length - 1;
-
     return (
       <td className="text-center p-1">
-        <div className="d-flex flex-column align-items-center gap-1">
-          <button
-            className="btn btn-outline-secondary btn-sm px-2 py-1"
-            onClick={() => insertSymbol(entry.symbol)}
-            title={entry.desc}
-          >
-            {entry.symbol}
-          </button>
-          <div className="d-flex align-items-center gap-1">
-            <button
-              type="button"
-              className={`btn btn-link btn-sm p-0 ${isFavorite ? 'text-warning' : 'text-muted'}`}
-              onClick={() => toggleFavorite(entry.symbol)}
-              aria-pressed={isFavorite}
-              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              {isFavorite ? "★" : "☆"}
-            </button>
-            {isFavoritesSection && (
-              <div className="btn-group btn-group-sm" role="group" aria-label="reorder favorite">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary btn-sm px-1 py-0"
-                  onClick={() => moveFavorite(entry.symbol, -1)}
-                  disabled={!canMoveUp}
-                  title="Move earlier"
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary btn-sm px-1 py-0"
-                  onClick={() => moveFavorite(entry.symbol, 1)}
-                  disabled={!canMoveDown}
-                  title="Move later"
-                >
-                  ↓
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <button
+          className="btn btn-outline-secondary btn-sm px-2 py-1 w-100"
+          onClick={() => insertSymbol(entry.symbol)}
+          onDragStart={(event) => handleSymbolDragStart(event, entry.symbol)}
+          draggable
+          title={entry.desc}
+        >
+          {entry.symbol}
+        </button>
       </td>
     );
   };
 
-  const SymbolRow = ({ entries, isFavoritesSection = false }) => (
+  const SymbolRow = ({ entries }) => (
     <tr>
       {entries.map((entry, idx) => (
-        <SymbolCell
-          key={idx}
-          entry={entry}
-          isFavoritesSection={isFavoritesSection}
-        />
+        <SymbolCell key={idx} entry={entry} />
       ))}
     </tr>
   );
@@ -323,46 +349,12 @@ export default function App() {
     navigator.clipboard.writeText(plainText);
   };
 
-  const toggleFavorite = (symbol) => {
-    setFavoriteSymbols((prev) => {
-      if (prev.includes(symbol)) {
-        return prev.filter((entry) => entry !== symbol);
-      }
-      return [...prev, symbol];
-    });
-  };
-
-  const moveFavorite = (symbol, direction) => {
-    setFavoriteSymbols((prev) => {
-      const index = prev.indexOf(symbol);
-      if (index === -1) return prev;
-      const newIndex = index + direction;
-      if (newIndex < 0 || newIndex >= prev.length) return prev;
-      const updated = [...prev];
-      [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
-      return updated;
-    });
-  };
-
   const toggleSection = (title) => {
     setOpenSections((prev) => ({
       ...prev,
       [title]: !(prev[title] ?? true),
     }));
   };
-
-  const favoriteEntries = favoriteSymbols
-    .map((symbol, favoriteIndex) => {
-      const entry = SYMBOL_LOOKUP[symbol];
-      return entry ? { ...entry, favoriteIndex } : null;
-    })
-    .filter(Boolean);
-
-  const sectionsToRender = favoriteEntries.length
-    ? [{ title: "Favorites", symbols: favoriteEntries }]
-    : [];
-
-  const combinedSections = [...sectionsToRender, ...SYMBOL_SECTIONS];
 
   return (
     <div className="container-fluid py-1">
@@ -431,14 +423,62 @@ export default function App() {
           </div>
         </div>
 
-        {/* Symbols grouped by category */}
+        {/* Symbol browser + favorites */}
         <div style={{ width: '280px' }} className="mt-2 mt-lg-0">
+          <div className="mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-1">
+              <span className="text-uppercase small fw-semibold text-muted">Favorites</span>
+              <small className="text-muted">{favoriteSlots.filter(Boolean).length}/{FAVORITE_SLOTS}</small>
+            </div>
+            <div className="d-flex flex-wrap gap-2">
+              {favoriteSlots.map((symbol, slotIndex) => {
+                const entry = symbol ? SYMBOL_LOOKUP[symbol] : null;
+                return (
+                  <div
+                    key={slotIndex}
+                    className={`border rounded p-2 text-center flex-grow-1 ${entry ? 'bg-white' : 'bg-light'}`}
+                    style={{ flex: '1 0 28%', minWidth: '70px' }}
+                    onDragOver={handleFavoriteDragOver}
+                    onDrop={(event) => handleFavoriteDrop(event, slotIndex)}
+                  >
+                    {entry ? (
+                      <>
+                        <button
+                          className="btn btn-outline-secondary btn-sm w-100"
+                          onClick={() => insertSymbol(entry.symbol)}
+                          draggable
+                          onDragStart={(event) => handleFavoriteDragStart(event, entry.symbol, slotIndex)}
+                          title={`${entry.section}: ${entry.desc}`}
+                        >
+                          {entry.symbol}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-link btn-sm p-0 text-danger"
+                          onClick={() => handleFavoriteClear(slotIndex)}
+                          title="Remove from favorites"
+                        >
+                          ×
+                        </button>
+                      </>
+                    ) : (
+                      <small className="text-muted d-block">Drop symbol</small>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <small className="text-muted d-block mt-1">
+              Drag any symbol button here to pin up to 10 quick-access favorites.
+            </small>
+          </div>
+
           <table className="table table-sm mb-0 small">
             <tbody style={{ 
               lineHeight: 1,
               verticalAlign: 'middle'
             }}>
-              {combinedSections.map((section) => (
+              {SYMBOL_SECTIONS.map((section) => (
                 <React.Fragment key={section.title}>
                   <tr>
                     <th
@@ -460,11 +500,7 @@ export default function App() {
                   </tr>
                   {(openSections[section.title] ?? true) &&
                     chunkIntoRows(section.symbols).map((row, rowIdx) => (
-                      <SymbolRow
-                        key={`${section.title}-${rowIdx}`}
-                        entries={row}
-                        isFavoritesSection={section.title === "Favorites"}
-                      />
+                      <SymbolRow key={`${section.title}-${rowIdx}`} entries={row} />
                     ))}
                 </React.Fragment>
               ))}
