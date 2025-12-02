@@ -137,12 +137,19 @@ const SYMBOL_SECTIONS = [
   },
 ];
 
+const buildInitialSectionState = () =>
+  SYMBOL_SECTIONS.reduce((acc, section) => {
+    acc[section.title] = true;
+    return acc;
+  }, {});
+
 export default function App() {
   const [text, setText] = useState("");
   const [showCheat, setShowCheat] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const textareaRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
+  const [openSections, setOpenSections] = useState(buildInitialSectionState);
 
   const handleTextChange = (e) => {
     setText(e.target.value);
@@ -224,6 +231,13 @@ export default function App() {
     navigator.clipboard.writeText(plainText);
   };
 
+  const toggleSection = (title) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [title]: !(prev[title] ?? true),
+    }));
+  };
+
   return (
     <div className="container-fluid py-1">
       <div className="mb-2">
@@ -301,16 +315,27 @@ export default function App() {
               {SYMBOL_SECTIONS.map((section) => (
                 <React.Fragment key={section.title}>
                   <tr>
-                    <th 
-                      colSpan={SYMBOL_COLUMNS} 
-                      className="table-light text-uppercase text-center small fw-semibold"
+                    <th
+                      colSpan={SYMBOL_COLUMNS}
+                      className="table-light p-0"
                     >
-                      {section.title}
+                      <button
+                        type="button"
+                        className="btn btn-link text-decoration-none text-reset w-100 text-uppercase small fw-semibold d-flex justify-content-between align-items-center px-2 py-1"
+                        onClick={() => toggleSection(section.title)}
+                        aria-expanded={openSections[section.title] ?? true}
+                      >
+                        <span>{section.title}</span>
+                        <span className="ms-2">
+                          {(openSections[section.title] ?? true) ? "▼" : "▶"}
+                        </span>
+                      </button>
                     </th>
                   </tr>
-                  {chunkIntoRows(section.symbols).map((row, rowIdx) => (
-                    <SymbolRow key={`${section.title}-${rowIdx}`} entries={row} />
-                  ))}
+                  {(openSections[section.title] ?? true) &&
+                    chunkIntoRows(section.symbols).map((row, rowIdx) => (
+                      <SymbolRow key={`${section.title}-${rowIdx}`} entries={row} />
+                    ))}
                 </React.Fragment>
               ))}
             </tbody>
