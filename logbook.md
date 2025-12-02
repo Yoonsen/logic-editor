@@ -40,6 +40,7 @@
 - Upgraded favorites UX to a 10-slot drag-and-drop shelf so symbols can be pinned or rearranged by dropping buttons into slots
 - Wired Alt+0–9 keyboard shortcuts to the favorite slots for instant insertion while typing
 - Persisted collapsed/expanded section state in localStorage so the symbol table remembers your preferred view between sessions
+- Labeled each favorite slot with its Alt shortcut right beside the clear button for easy reference
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`

@@ -498,17 +498,23 @@ export default function App() {
                         >
                           {entry.symbol}
                         </button>
-                        <button
-                          type="button"
-                          className="btn btn-link btn-sm p-0 text-danger"
-                          onClick={() => handleFavoriteClear(slotIndex)}
-                          title="Remove from favorites"
-                        >
-                          ×
-                        </button>
+                        <div className="d-flex justify-content-between align-items-center mt-1">
+                          <button
+                            type="button"
+                            className="btn btn-link btn-sm p-0 text-danger"
+                            onClick={() => handleFavoriteClear(slotIndex)}
+                            title="Remove from favorites"
+                          >
+                            ×
+                          </button>
+                          <small className="text-muted">Alt+{slotIndex}</small>
+                        </div>
                       </>
                     ) : (
-                      <small className="text-muted d-block">Drop symbol</small>
+                      <div className="d-flex flex-column gap-1">
+                        <small className="text-muted d-block">Drop symbol</small>
+                        <small className="text-muted text-center">Alt+{slotIndex}</small>
+                      </div>
                     )}
                   </div>
                 );
