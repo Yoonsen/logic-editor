@@ -196,16 +196,9 @@ const SLOT_HOTKEY_BADGE_STYLE = {
   top: '4px',
   left: '6px',
   fontSize: '0.65rem',
-  color: '#6c757d',
+  color: '#2c6cbe',
+  opacity: 0.4,
   pointerEvents: 'none'
-};
-
-const SLOT_CLEAR_BUTTON_STYLE = {
-  position: 'absolute',
-  top: '3px',
-  right: '6px',
-  fontSize: '0.85rem',
-  lineHeight: 1
 };
 
 export default function App() {
@@ -341,14 +334,6 @@ export default function App() {
         updated[sourceIndex] = targetOriginal;
       }
 
-      return updated;
-    });
-  };
-
-  const handleFavoriteClear = (slotIndex) => {
-    setFavoriteSlots((prev) => {
-      const updated = [...prev];
-      updated[slotIndex] = null;
       return updated;
     });
   };
@@ -530,18 +515,6 @@ export default function App() {
                           {entry.symbol}
                         </button>
                         <span style={SLOT_HOTKEY_BADGE_STYLE}>{slotLabel}</span>
-                        <button
-                          type="button"
-                          className="btn btn-link btn-sm p-0 text-muted"
-                          style={SLOT_CLEAR_BUTTON_STYLE}
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            handleFavoriteClear(slotIndex);
-                          }}
-                          title="Remove from favorites"
-                        >
-                          ×
-                        </button>
                       </div>
                     ) : (
                       <div

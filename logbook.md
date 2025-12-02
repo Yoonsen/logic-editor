@@ -40,10 +40,9 @@
 - Upgraded favorites UX to a 3×3 (9-slot) drag-and-drop shelf so symbols can be pinned or rearranged by dropping buttons into slots
 - Wired Alt+1–9 keyboard shortcuts to the favorite slots for instant insertion while typing
 - Persisted collapsed/expanded section state in localStorage so the symbol table remembers your preferred view between sessions
-- Labeled each favorite slot with its Alt shortcut right beside the clear button for easy reference
+- Embedded each favorite slot's shortcut number directly inside the button for easy reference
 - Normalized hotkey handling to use hardware key codes so Option+1–9 on macOS now trigger the intended favorites
-- Softened the favorite-slot clear button styling (muted gray instead of attention-grabbing red)
-- Moved the `×` and hotkey badge into the symbol button corners (badge shows slot number only) so the slots feel cohesive without extra footer rows
+- Removed the dedicated clear button; dropping a new symbol replaces the old one, and badges remain in-button to keep the layout cohesive
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`
