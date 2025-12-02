@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SYMBOL_COLUMNS = 5;
 const FAVORITES_STORAGE_KEY = "logicEditorFavorites";
+const SECTION_STATE_STORAGE_KEY = "logicEditorSectionState";
 const FAVORITE_SLOTS = 10;
 
 const SYMBOL_SECTIONS = [
@@ -145,6 +146,21 @@ const buildInitialSectionState = () =>
     return acc;
   }, {});
 
+const loadSectionState = () => {
+  if (typeof window === "undefined") return buildInitialSectionState();
+  try {
+    const stored = window.localStorage.getItem(SECTION_STATE_STORAGE_KEY);
+    if (!stored) return buildInitialSectionState();
+    const parsed = JSON.parse(stored);
+    return SYMBOL_SECTIONS.reduce((acc, section) => {
+      acc[section.title] = typeof parsed[section.title] === "boolean" ? parsed[section.title] : true;
+      return acc;
+    }, {});
+  } catch {
+    return buildInitialSectionState();
+  }
+};
+
 const ALL_SYMBOL_ENTRIES = SYMBOL_SECTIONS.flatMap(({ title, symbols }) =>
   symbols.map((symbolData) => ({ ...symbolData, section: title }))
 );
@@ -182,7 +198,7 @@ export default function App() {
   const textareaRef = useRef(null);
   const insertSymbolRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
-  const [openSections, setOpenSections] = useState(buildInitialSectionState);
+  const [openSections, setOpenSections] = useState(loadSectionState);
   const [favoriteSlots, setFavoriteSlots] = useState(createEmptyFavoriteSlots);
 
   useEffect(() => {
@@ -197,6 +213,15 @@ export default function App() {
       );
     }
   }, [favoriteSlots]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        SECTION_STATE_STORAGE_KEY,
+        JSON.stringify(openSections)
+      );
+    }
+  }, [openSections]);
 
   const handleTextChange = (e) => {
     setText(e.target.value);
