@@ -119,6 +119,20 @@ const SYMBOL_SECTIONS = [
     title: "Delimiters",
     symbols: [
       { symbol: "$", desc: "math delimiter" },
+      { symbol: "–", desc: "en dash" },
+      { symbol: "—", desc: "em dash" },
+    ],
+  },
+  {
+    title: "Currency & Special",
+    symbols: [
+      { symbol: "£", desc: "pound sterling" },
+      { symbol: "€", desc: "euro" },
+      { symbol: "¥", desc: "yen" },
+      { symbol: "¢", desc: "cent sign" },
+      { symbol: "§", desc: "section sign" },
+      { symbol: "¶", desc: "pilcrow" },
+      { symbol: "•", desc: "bullet" },
     ],
   },
 ];

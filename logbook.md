@@ -34,6 +34,7 @@
 - Added a dedicated linear-logic set (⊗, ⊸, ⅋, ⊥, !, ?, □, △) to better support sequent-style workflows
 - Simplified maintenance by chunking symbol configs into reusable rows instead of hard-coded table markup
 - Verified responsive layout still behaves on narrow viewports
+- Extended Delimiters with en/em dashes and introduced a Currency & Special block (€, £, ¥, etc.) for harder-to-type characters
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`
