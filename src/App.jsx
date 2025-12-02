@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const SYMBOL_COLUMNS = 5;
 const FAVORITES_STORAGE_KEY = "logicEditorFavorites";
 const SECTION_STATE_STORAGE_KEY = "logicEditorSectionState";
-const FAVORITE_SLOTS = 10;
+const FAVORITE_SLOTS = 9;
 
 const SYMBOL_SECTIONS = [
   {
@@ -388,10 +388,23 @@ export default function App() {
 
   useEffect(() => {
     const handleFavoriteHotkey = (event) => {
-      if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-      const key = event.key;
-      if (!/^[0-9]$/.test(key)) return;
-      const slotIndex = Number(key);
+      if (!event.altKey || event.ctrlKey || event.metaKey) return;
+
+      const code = event.code || "";
+      let numberPressed = null;
+      if (code.startsWith("Digit")) {
+        numberPressed = Number(code.slice(-1));
+      } else if (code.startsWith("Numpad")) {
+        numberPressed = Number(code.slice(-1));
+      } else if (/^[1-9]$/.test(event.key)) {
+        numberPressed = Number(event.key);
+      }
+
+      if (numberPressed === null || Number.isNaN(numberPressed) || numberPressed < 1 || numberPressed > FAVORITE_SLOTS) {
+        return;
+      }
+
+      const slotIndex = numberPressed - 1;
       const symbol = favoriteSlots[slotIndex];
       if (!symbol) return;
       event.preventDefault();
@@ -479,6 +492,7 @@ export default function App() {
             <div className="d-flex flex-wrap gap-2">
               {favoriteSlots.map((symbol, slotIndex) => {
                 const entry = symbol ? SYMBOL_LOOKUP[symbol] : null;
+                const slotLabel = slotIndex + 1;
                 return (
                   <div
                     key={slotIndex}
@@ -507,13 +521,13 @@ export default function App() {
                           >
                             ×
                           </button>
-                          <small className="text-muted">Alt+{slotIndex}</small>
+                          <small className="text-muted">Alt+{slotLabel}</small>
                         </div>
                       </>
                     ) : (
                       <div className="d-flex flex-column gap-1">
                         <small className="text-muted d-block">Drop symbol</small>
-                        <small className="text-muted text-center">Alt+{slotIndex}</small>
+                        <small className="text-muted text-center">Alt+{slotLabel}</small>
                       </div>
                     )}
                   </div>
@@ -521,7 +535,7 @@ export default function App() {
               })}
             </div>
             <small className="text-muted d-block mt-1">
-              Drag symbols here to pin up to 10 quick-access favorites. Use Alt+0–9 anywhere to insert the matching slot.
+              Drag symbols here to pin up to 9 quick-access favorites. Use Alt+1–9 anywhere to insert the matching slot.
             </small>
           </div>
 

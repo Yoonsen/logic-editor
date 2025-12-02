@@ -37,10 +37,11 @@
 - Extended Delimiters with en/em dashes and introduced a Currency & Special block (€, £, ¥, etc.) for harder-to-type characters
 - Added collapsible section headers so users can temporarily hide symbol groups they are not using
 - Introduced a Favorites section with star toggles, local persistence, and per-symbol reordering controls
-- Upgraded favorites UX to a 10-slot drag-and-drop shelf so symbols can be pinned or rearranged by dropping buttons into slots
-- Wired Alt+0–9 keyboard shortcuts to the favorite slots for instant insertion while typing
+- Upgraded favorites UX to a 3×3 (9-slot) drag-and-drop shelf so symbols can be pinned or rearranged by dropping buttons into slots
+- Wired Alt+1–9 keyboard shortcuts to the favorite slots for instant insertion while typing
 - Persisted collapsed/expanded section state in localStorage so the symbol table remembers your preferred view between sessions
 - Labeled each favorite slot with its Alt shortcut right beside the clear button for easy reference
+- Normalized hotkey handling to use hardware key codes so Option+1–9 on macOS now trigger the intended favorites
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`
