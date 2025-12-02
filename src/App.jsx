@@ -3,6 +3,126 @@ import { InlineMath, BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const SYMBOL_COLUMNS = 5;
+
+const SYMBOL_SECTIONS = [
+  {
+    title: "Logic Connectives",
+    symbols: [
+      { symbol: "∧", desc: "AND" },
+      { symbol: "∨", desc: "OR" },
+      { symbol: "¬", desc: "NOT" },
+      { symbol: "→", desc: "implies" },
+      { symbol: "↔", desc: "if and only if" },
+      { symbol: "∀", desc: "for all" },
+      { symbol: "∃", desc: "there exists" },
+      { symbol: "=", desc: "equals" },
+      { symbol: "≠", desc: "not equal" },
+      { symbol: "≤", desc: "less than or equal" },
+      { symbol: "≥", desc: "greater than or equal" },
+    ],
+  },
+  {
+    title: "Linear Logic",
+    symbols: [
+      { symbol: "⊗", desc: "tensor product" },
+      { symbol: "⊸", desc: "linear implication" },
+      { symbol: "⅋", desc: "par (upside-down &)" },
+      { symbol: "⊥", desc: "bottom/tack" },
+      { symbol: "!", desc: "of course (bang)" },
+      { symbol: "?", desc: "why not" },
+      { symbol: "□", desc: "box modality" },
+      { symbol: "△", desc: "triangle modality" },
+    ],
+  },
+  {
+    title: "Set Theory & Numbers",
+    symbols: [
+      { symbol: "∈", desc: "element of" },
+      { symbol: "∉", desc: "not element of" },
+      { symbol: "⊂", desc: "proper subset" },
+      { symbol: "⊃", desc: "proper superset" },
+      { symbol: "⊆", desc: "subset" },
+      { symbol: "⊇", desc: "superset" },
+      { symbol: "∅", desc: "empty set" },
+      { symbol: "ℕ", desc: "natural numbers" },
+      { symbol: "ℤ", desc: "integers" },
+      { symbol: "ℚ", desc: "rational numbers" },
+      { symbol: "ℝ", desc: "real numbers" },
+      { symbol: "ℂ", desc: "complex numbers" },
+      { symbol: "⋂", desc: "intersection" },
+      { symbol: "⋃", desc: "union" },
+      { symbol: "×", desc: "cartesian product" },
+      { symbol: "∖", desc: "set difference" },
+    ],
+  },
+  {
+    title: "Greek Letters & Constants",
+    symbols: [
+      { symbol: "α", desc: "alpha" },
+      { symbol: "β", desc: "beta" },
+      { symbol: "γ", desc: "gamma" },
+      { symbol: "δ", desc: "delta" },
+      { symbol: "ε", desc: "epsilon" },
+      { symbol: "λ", desc: "lambda" },
+      { symbol: "μ", desc: "mu" },
+      { symbol: "π", desc: "pi" },
+      { symbol: "σ", desc: "sigma" },
+      { symbol: "φ", desc: "phi" },
+      { symbol: "ψ", desc: "psi" },
+      { symbol: "ω", desc: "omega" },
+      { symbol: "∞", desc: "infinity" },
+    ],
+  },
+  {
+    title: "Cardinalities",
+    symbols: [
+      { symbol: "ℵ", desc: "aleph" },
+      { symbol: "ℵ₀", desc: "aleph-null" },
+      { symbol: "ℵ₁", desc: "aleph-one" },
+      { symbol: "ℵ₂", desc: "aleph-two" },
+      { symbol: "ℵ₃", desc: "aleph-three" },
+    ],
+  },
+  {
+    title: "Superscripts",
+    symbols: [
+      { symbol: "⁰", desc: "superscript zero" },
+      { symbol: "¹", desc: "superscript one" },
+      { symbol: "²", desc: "superscript two" },
+      { symbol: "³", desc: "superscript three" },
+      { symbol: "⁴", desc: "superscript four" },
+      { symbol: "⁵", desc: "superscript five" },
+      { symbol: "⁶", desc: "superscript six" },
+      { symbol: "⁷", desc: "superscript seven" },
+      { symbol: "⁸", desc: "superscript eight" },
+      { symbol: "⁹", desc: "superscript nine" },
+      { symbol: "ⁿ", desc: "superscript n" },
+      { symbol: "ᵐ", desc: "superscript m" },
+      { symbol: "ᵏ", desc: "superscript k" },
+      { symbol: "ᵗ", desc: "superscript t" },
+      { symbol: "ᵈ", desc: "superscript d" },
+    ],
+  },
+  {
+    title: "Subscripts",
+    symbols: [
+      { symbol: "₀", desc: "subscript zero" },
+      { symbol: "₁", desc: "subscript one" },
+      { symbol: "₂", desc: "subscript two" },
+      { symbol: "₃", desc: "subscript three" },
+      { symbol: "₄", desc: "subscript four" },
+      { symbol: "₅", desc: "subscript five" },
+    ],
+  },
+  {
+    title: "Delimiters",
+    symbols: [
+      { symbol: "$", desc: "math delimiter" },
+    ],
+  },
+];
+
 export default function App() {
   const [text, setText] = useState("");
   const [showCheat, setShowCheat] = useState(false);
@@ -45,53 +165,33 @@ export default function App() {
     });
   };
 
-  const SymbolRow = ({ symbol1, desc1, symbol2, desc2, symbol3, desc3, symbol4, desc4, symbol5, desc5 }) => (
+  const chunkIntoRows = (symbols) => {
+    const rows = [];
+    for (let i = 0; i < symbols.length; i += SYMBOL_COLUMNS) {
+      const row = symbols.slice(i, i + SYMBOL_COLUMNS);
+      while (row.length < SYMBOL_COLUMNS) {
+        row.push(null);
+      }
+      rows.push(row);
+    }
+    return rows;
+  };
+
+  const SymbolRow = ({ entries }) => (
     <tr>
-      <td className="text-center p-1">
-        <button 
-          className="btn btn-outline-secondary btn-sm px-2 py-1"
-          onClick={() => insertSymbol(symbol1)}
-          title={desc1}
-        >
-          {symbol1}
-        </button>
-      </td>
-      <td className="text-center p-1">
-        <button 
-          className="btn btn-outline-secondary btn-sm px-2 py-1"
-          onClick={() => insertSymbol(symbol2)}
-          title={desc2}
-        >
-          {symbol2}
-        </button>
-      </td>
-      <td className="text-center p-1">
-        <button 
-          className="btn btn-outline-secondary btn-sm px-2 py-1"
-          onClick={() => insertSymbol(symbol3)}
-          title={desc3}
-        >
-          {symbol3}
-        </button>
-      </td>
-      <td className="text-center p-1">
-        <button 
-          className="btn btn-outline-secondary btn-sm px-2 py-1"
-          onClick={() => insertSymbol(symbol4)}
-          title={desc4}
-        >
-          {symbol4}
-        </button>
-      </td>
-      <td className="text-center p-1">
-        <button 
-          className="btn btn-outline-secondary btn-sm px-2 py-1"
-          onClick={() => insertSymbol(symbol5)}
-          title={desc5}
-        >
-          {symbol5}
-        </button>
-      </td>
+      {entries.map((entry, idx) => (
+        <td className="text-center p-1" key={idx}>
+          {entry && (
+            <button
+              className="btn btn-outline-secondary btn-sm px-2 py-1"
+              onClick={() => insertSymbol(entry.symbol)}
+              title={entry.desc}
+            >
+              {entry.symbol}
+            </button>
+          )}
+        </td>
+      ))}
     </tr>
   );
 
@@ -177,28 +277,28 @@ export default function App() {
           </div>
         </div>
 
-        {/* Symbols in 5 columns */}
+        {/* Symbols grouped by category */}
         <div style={{ width: '280px' }} className="mt-2 mt-lg-0">
           <table className="table table-sm mb-0 small">
             <tbody style={{ 
               lineHeight: 1,
               verticalAlign: 'middle'
             }}>
-              <SymbolRow symbol1="∧" desc1="AND" symbol2="⊗" desc2="tensor product" symbol3="α" desc3="alpha" symbol4="∈" desc4="element of" symbol5="⁰" desc5="superscript zero" />
-              <SymbolRow symbol1="∨" desc1="OR" symbol2="⊸" desc2="linear implication" symbol3="β" desc3="beta" symbol4="∉" desc4="not element of" symbol5="¹" desc5="superscript one" />
-              <SymbolRow symbol1="¬" desc1="NOT" symbol2="⅋" desc2="par" symbol3="γ" desc3="gamma" symbol4="⊂" desc4="proper subset" symbol5="²" desc5="superscript two" />
-              <SymbolRow symbol1="→" desc1="implies" symbol2="⊥" desc2="perpendicular/tack" symbol3="δ" desc3="delta" symbol4="⊃" desc4="proper superset" symbol5="³" desc5="superscript three" />
-              <SymbolRow symbol1="↔" desc1="if and only if" symbol2="!" desc2="of course/bang" symbol3="ε" desc3="epsilon" symbol4="∅" desc4="empty set" symbol5="⁴" desc5="superscript four" />
-              <SymbolRow symbol1="∀" desc1="for all" symbol2="?" desc2="why not/question" symbol3="λ" desc3="lambda" symbol4="ℕ" desc4="natural numbers" symbol5="⁵" desc5="superscript five" />
-              <SymbolRow symbol1="∃" desc1="there exists" symbol2="⋂" desc2="intersection" symbol3="μ" desc3="mu" symbol4="ℤ" desc4="integers" symbol5="⁶" desc5="superscript six" />
-              <SymbolRow symbol1="=" desc1="equals" symbol2="⋃" desc2="union" symbol3="π" desc3="pi" symbol4="ℚ" desc4="rational numbers" symbol5="⁷" desc5="superscript seven" />
-              <SymbolRow symbol1="≠" desc1="not equal" symbol2="∉" desc2="not element of" symbol3="σ" desc3="sigma" symbol4="ℝ" desc4="real numbers" symbol5="⁸" desc5="superscript eight" />
-              <SymbolRow symbol1="≤" desc1="less than or equal" symbol2="⊆" desc2="subset" symbol3="φ" desc3="phi" symbol4="ℂ" desc4="complex numbers" symbol5="⁹" desc5="superscript nine" />
-              <SymbolRow symbol1="≥" desc1="greater than or equal" symbol2="⊇" desc2="superset" symbol3="ψ" desc3="psi" symbol4="×" desc4="cartesian product" symbol5="ⁿ" desc5="superscript n" />
-              <SymbolRow symbol1="$" desc1="math delimiter" symbol2=" " desc2="" symbol3="ω" desc3="omega" symbol4="∖" desc4="set difference" symbol5="ᵐ" desc5="superscript m" />
-              <SymbolRow symbol1="ℵ" desc1="aleph" symbol2="ℵ₀" desc2="aleph-null" symbol3="∞" desc3="infinity" symbol4="ℵ₁" desc4="aleph-one" symbol5="ᵏ" desc5="superscript k" />
-              <SymbolRow symbol1="ℵ₂" desc1="aleph-two" symbol2="ℵ₃" desc2="aleph-three" symbol3="₀" desc3="subscript zero" symbol4="₁" desc4="subscript one" symbol5="ᵗ" desc5="superscript t" />
-              <SymbolRow symbol1="₂" desc1="subscript two" symbol2="₃" desc2="subscript three" symbol3="₄" desc3="subscript four" symbol4="₅" desc4="subscript five" symbol5="ᵈ" desc5="superscript d" />
+              {SYMBOL_SECTIONS.map((section) => (
+                <React.Fragment key={section.title}>
+                  <tr>
+                    <th 
+                      colSpan={SYMBOL_COLUMNS} 
+                      className="table-light text-uppercase text-center small fw-semibold"
+                    >
+                      {section.title}
+                    </th>
+                  </tr>
+                  {chunkIntoRows(section.symbols).map((row, rowIdx) => (
+                    <SymbolRow key={`${section.title}-${rowIdx}`} entries={row} />
+                  ))}
+                </React.Fragment>
+              ))}
             </tbody>
           </table>
         </div>
