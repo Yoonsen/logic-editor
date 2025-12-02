@@ -202,9 +202,10 @@ const SLOT_HOTKEY_BADGE_STYLE = {
 
 const SLOT_CLEAR_BUTTON_STYLE = {
   position: 'absolute',
-  top: '-6px',
-  right: '-4px',
-  fontSize: '0.85rem'
+  top: '3px',
+  right: '6px',
+  fontSize: '0.85rem',
+  lineHeight: 1
 };
 
 export default function App() {
@@ -528,7 +529,7 @@ export default function App() {
                         >
                           {entry.symbol}
                         </button>
-                        <span style={SLOT_HOTKEY_BADGE_STYLE}>Alt+{slotLabel}</span>
+                        <span style={SLOT_HOTKEY_BADGE_STYLE}>{slotLabel}</span>
                         <button
                           type="button"
                           className="btn btn-link btn-sm p-0 text-muted"
@@ -548,8 +549,8 @@ export default function App() {
                         style={{ minHeight: '54px' }}
                       >
                         <small className="text-muted d-block">Drop symbol</small>
-                        <small className="text-muted text-center">Alt+{slotLabel}</small>
-                        <span style={SLOT_HOTKEY_BADGE_STYLE}>Alt+{slotLabel}</span>
+                        <small className="text-muted text-center">Slot {slotLabel}</small>
+                        <span style={SLOT_HOTKEY_BADGE_STYLE}>{slotLabel}</span>
                       </div>
                     )}
                   </div>
