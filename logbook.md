@@ -43,6 +43,7 @@
 - Labeled each favorite slot with its Alt shortcut right beside the clear button for easy reference
 - Normalized hotkey handling to use hardware key codes so Option+1–9 on macOS now trigger the intended favorites
 - Softened the favorite-slot clear button styling (muted gray instead of attention-grabbing red)
+- Moved the `×` and hotkey badge into the symbol button corners so the slots feel cohesive without extra footer rows
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`

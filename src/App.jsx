@@ -191,6 +191,22 @@ const loadFavoriteSlots = () => {
   }
 };
 
+const SLOT_HOTKEY_BADGE_STYLE = {
+  position: 'absolute',
+  top: '4px',
+  left: '6px',
+  fontSize: '0.65rem',
+  color: '#6c757d',
+  pointerEvents: 'none'
+};
+
+const SLOT_CLEAR_BUTTON_STYLE = {
+  position: 'absolute',
+  top: '-6px',
+  right: '-4px',
+  fontSize: '0.85rem'
+};
+
 export default function App() {
   const [text, setText] = useState("");
   const [showCheat, setShowCheat] = useState(false);
@@ -502,7 +518,7 @@ export default function App() {
                     onDrop={(event) => handleFavoriteDrop(event, slotIndex)}
                   >
                     {entry ? (
-                      <>
+                      <div className="position-relative">
                         <button
                           className="btn btn-outline-secondary btn-sm w-100"
                           onClick={() => insertSymbol(entry.symbol)}
@@ -512,22 +528,28 @@ export default function App() {
                         >
                           {entry.symbol}
                         </button>
-                        <div className="d-flex justify-content-between align-items-center mt-1">
-                          <button
-                            type="button"
-                            className="btn btn-link btn-sm p-0 text-muted"
-                            onClick={() => handleFavoriteClear(slotIndex)}
-                            title="Remove from favorites"
-                          >
-                            ×
-                          </button>
-                          <small className="text-muted">Alt+{slotLabel}</small>
-                        </div>
-                      </>
+                        <span style={SLOT_HOTKEY_BADGE_STYLE}>Alt+{slotLabel}</span>
+                        <button
+                          type="button"
+                          className="btn btn-link btn-sm p-0 text-muted"
+                          style={SLOT_CLEAR_BUTTON_STYLE}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleFavoriteClear(slotIndex);
+                          }}
+                          title="Remove from favorites"
+                        >
+                          ×
+                        </button>
+                      </div>
                     ) : (
-                      <div className="d-flex flex-column gap-1">
+                      <div
+                        className="position-relative d-flex flex-column gap-1 align-items-center justify-content-center"
+                        style={{ minHeight: '54px' }}
+                      >
                         <small className="text-muted d-block">Drop symbol</small>
                         <small className="text-muted text-center">Alt+{slotLabel}</small>
+                        <span style={SLOT_HOTKEY_BADGE_STYLE}>Alt+{slotLabel}</span>
                       </div>
                     )}
                   </div>
