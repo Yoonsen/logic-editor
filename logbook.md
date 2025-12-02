@@ -38,6 +38,7 @@
 - Added collapsible section headers so users can temporarily hide symbol groups they are not using
 - Introduced a Favorites section with star toggles, local persistence, and per-symbol reordering controls
 - Upgraded favorites UX to a 10-slot drag-and-drop shelf so symbols can be pinned or rearranged by dropping buttons into slots
+- Wired Alt+0–9 keyboard shortcuts to the favorite slots for instant insertion while typing
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`

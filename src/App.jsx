@@ -180,6 +180,7 @@ export default function App() {
   const [showCheat, setShowCheat] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const textareaRef = useRef(null);
+  const insertSymbolRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
   const [openSections, setOpenSections] = useState(buildInitialSectionState);
   const [favoriteSlots, setFavoriteSlots] = useState(createEmptyFavoriteSlots);
@@ -220,6 +221,10 @@ export default function App() {
       setCursorPosition(newPosition);
     }, 0);
   };
+
+  useEffect(() => {
+    insertSymbolRef.current = insertSymbol;
+  }, [insertSymbol]);
 
   const renderMath = (input) => {
     const parts = input.split(/(\${1,2}[^$]+?\${1,2})/g);
@@ -356,6 +361,22 @@ export default function App() {
     }));
   };
 
+  useEffect(() => {
+    const handleFavoriteHotkey = (event) => {
+      if (!event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      const key = event.key;
+      if (!/^[0-9]$/.test(key)) return;
+      const slotIndex = Number(key);
+      const symbol = favoriteSlots[slotIndex];
+      if (!symbol) return;
+      event.preventDefault();
+      insertSymbolRef.current?.(symbol);
+    };
+
+    window.addEventListener("keydown", handleFavoriteHotkey);
+    return () => window.removeEventListener("keydown", handleFavoriteHotkey);
+  }, [favoriteSlots]);
+
   return (
     <div className="container-fluid py-1">
       <div className="mb-2">
@@ -469,7 +490,7 @@ export default function App() {
               })}
             </div>
             <small className="text-muted d-block mt-1">
-              Drag any symbol button here to pin up to 10 quick-access favorites.
+              Drag symbols here to pin up to 10 quick-access favorites. Use Alt+0–9 anywhere to insert the matching slot.
             </small>
           </div>
 
