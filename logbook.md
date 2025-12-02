@@ -36,6 +36,7 @@
 - Verified responsive layout still behaves on narrow viewports
 - Extended Delimiters with en/em dashes and introduced a Currency & Special block (€, £, ¥, etc.) for harder-to-type characters
 - Added collapsible section headers so users can temporarily hide symbol groups they are not using
+- Introduced a Favorites section with star toggles, local persistence, and per-symbol reordering controls
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`

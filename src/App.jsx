@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { InlineMath, BlockMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const SYMBOL_COLUMNS = 5;
+const FAVORITES_STORAGE_KEY = "logicEditorFavorites";
 
 const SYMBOL_SECTIONS = [
   {
@@ -143,6 +144,26 @@ const buildInitialSectionState = () =>
     return acc;
   }, {});
 
+const ALL_SYMBOL_ENTRIES = SYMBOL_SECTIONS.flatMap(({ title, symbols }) =>
+  symbols.map((symbolData) => ({ ...symbolData, section: title }))
+);
+
+const SYMBOL_LOOKUP = ALL_SYMBOL_ENTRIES.reduce((acc, entry) => {
+  acc[entry.symbol] = entry;
+  return acc;
+}, {});
+
+const loadFavorites = () => {
+  if (typeof window === "undefined") return [];
+  try {
+    const stored = window.localStorage.getItem(FAVORITES_STORAGE_KEY);
+    const parsed = stored ? JSON.parse(stored) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
 export default function App() {
   const [text, setText] = useState("");
   const [showCheat, setShowCheat] = useState(false);
@@ -150,6 +171,20 @@ export default function App() {
   const textareaRef = useRef(null);
   const [cursorPosition, setCursorPosition] = useState(0);
   const [openSections, setOpenSections] = useState(buildInitialSectionState);
+  const [favoriteSymbols, setFavoriteSymbols] = useState([]);
+
+  useEffect(() => {
+    setFavoriteSymbols(loadFavorites());
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(
+        FAVORITES_STORAGE_KEY,
+        JSON.stringify(favoriteSymbols)
+      );
+    }
+  }, [favoriteSymbols]);
 
   const handleTextChange = (e) => {
     setText(e.target.value);
@@ -198,20 +233,77 @@ export default function App() {
     return rows;
   };
 
-  const SymbolRow = ({ entries }) => (
+  const SymbolCell = ({ entry, isFavoritesSection }) => {
+    if (!entry) {
+      return <td className="text-center p-1" />;
+    }
+
+    const isFavorite = favoriteSymbols.includes(entry.symbol);
+    const canMoveUp =
+      isFavoritesSection &&
+      typeof entry.favoriteIndex === "number" &&
+      entry.favoriteIndex > 0;
+    const canMoveDown =
+      isFavoritesSection &&
+      typeof entry.favoriteIndex === "number" &&
+      entry.favoriteIndex < favoriteSymbols.length - 1;
+
+    return (
+      <td className="text-center p-1">
+        <div className="d-flex flex-column align-items-center gap-1">
+          <button
+            className="btn btn-outline-secondary btn-sm px-2 py-1"
+            onClick={() => insertSymbol(entry.symbol)}
+            title={entry.desc}
+          >
+            {entry.symbol}
+          </button>
+          <div className="d-flex align-items-center gap-1">
+            <button
+              type="button"
+              className={`btn btn-link btn-sm p-0 ${isFavorite ? 'text-warning' : 'text-muted'}`}
+              onClick={() => toggleFavorite(entry.symbol)}
+              aria-pressed={isFavorite}
+              title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              {isFavorite ? "★" : "☆"}
+            </button>
+            {isFavoritesSection && (
+              <div className="btn-group btn-group-sm" role="group" aria-label="reorder favorite">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm px-1 py-0"
+                  onClick={() => moveFavorite(entry.symbol, -1)}
+                  disabled={!canMoveUp}
+                  title="Move earlier"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm px-1 py-0"
+                  onClick={() => moveFavorite(entry.symbol, 1)}
+                  disabled={!canMoveDown}
+                  title="Move later"
+                >
+                  ↓
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </td>
+    );
+  };
+
+  const SymbolRow = ({ entries, isFavoritesSection = false }) => (
     <tr>
       {entries.map((entry, idx) => (
-        <td className="text-center p-1" key={idx}>
-          {entry && (
-            <button
-              className="btn btn-outline-secondary btn-sm px-2 py-1"
-              onClick={() => insertSymbol(entry.symbol)}
-              title={entry.desc}
-            >
-              {entry.symbol}
-            </button>
-          )}
-        </td>
+        <SymbolCell
+          key={idx}
+          entry={entry}
+          isFavoritesSection={isFavoritesSection}
+        />
       ))}
     </tr>
   );
@@ -231,12 +323,46 @@ export default function App() {
     navigator.clipboard.writeText(plainText);
   };
 
+  const toggleFavorite = (symbol) => {
+    setFavoriteSymbols((prev) => {
+      if (prev.includes(symbol)) {
+        return prev.filter((entry) => entry !== symbol);
+      }
+      return [...prev, symbol];
+    });
+  };
+
+  const moveFavorite = (symbol, direction) => {
+    setFavoriteSymbols((prev) => {
+      const index = prev.indexOf(symbol);
+      if (index === -1) return prev;
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= prev.length) return prev;
+      const updated = [...prev];
+      [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+      return updated;
+    });
+  };
+
   const toggleSection = (title) => {
     setOpenSections((prev) => ({
       ...prev,
       [title]: !(prev[title] ?? true),
     }));
   };
+
+  const favoriteEntries = favoriteSymbols
+    .map((symbol, favoriteIndex) => {
+      const entry = SYMBOL_LOOKUP[symbol];
+      return entry ? { ...entry, favoriteIndex } : null;
+    })
+    .filter(Boolean);
+
+  const sectionsToRender = favoriteEntries.length
+    ? [{ title: "Favorites", symbols: favoriteEntries }]
+    : [];
+
+  const combinedSections = [...sectionsToRender, ...SYMBOL_SECTIONS];
 
   return (
     <div className="container-fluid py-1">
@@ -312,7 +438,7 @@ export default function App() {
               lineHeight: 1,
               verticalAlign: 'middle'
             }}>
-              {SYMBOL_SECTIONS.map((section) => (
+              {combinedSections.map((section) => (
                 <React.Fragment key={section.title}>
                   <tr>
                     <th
@@ -334,7 +460,11 @@ export default function App() {
                   </tr>
                   {(openSections[section.title] ?? true) &&
                     chunkIntoRows(section.symbols).map((row, rowIdx) => (
-                      <SymbolRow key={`${section.title}-${rowIdx}`} entries={row} />
+                      <SymbolRow
+                        key={`${section.title}-${rowIdx}`}
+                        entries={row}
+                        isFavoritesSection={section.title === "Favorites"}
+                      />
                     ))}
                 </React.Fragment>
               ))}
