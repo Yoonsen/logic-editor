@@ -5,7 +5,7 @@ It exposes a curated palette of connective symbols, set-theory operators, number
 
 ## Key Features
 
-- **Data‑driven symbol sections** – set operations, number sets, cardinalities, superscripts/subscripts, delimiters, currency, and now the complete Greek alphabet.
+- **Data‑driven symbol sections** – set operations, number sets, cardinalities, superscripts/subscripts, linear-logic operators, currency, and now the complete Greek alphabet.
 - **Collapsible categories** – collapse rarely used sections; their state is persisted automatically in `localStorage`.
 - **Favorites shelf** – drag any symbol into one of nine quick slots. Slots show a subtle badge with their hotkey.
 - **Keyboard shortcuts** – press `Alt+1` through `Alt+9` anywhere in the app to insert the corresponding favorite into the editor.
