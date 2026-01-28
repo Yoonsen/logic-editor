@@ -43,6 +43,7 @@
 - Embedded each favorite slot's shortcut number directly inside the button for easy reference
 - Normalized hotkey handling to use hardware key codes so Option+1–9 on macOS now trigger the intended favorites
 - Removed the dedicated clear button; dropping a new symbol replaces the old one, and badges remain in-button to keep the layout cohesive
+- Expanded the Greek letter sections to cover the full uppercase/lowercase alphabet (plus vartheta/varphi/varpi variants)
 
 ### Build & Deployment
 - Installed dependencies and produced a production bundle via `npm run build`
